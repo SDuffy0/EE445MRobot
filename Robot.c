@@ -210,7 +210,7 @@ RobotState[] RobotFSM = {
 
 uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
 	uint16_t nextState = STRAIGHT;
-	if((FR<150) && (FL<150)){  // very close!!
+	if((FR<150) && (FL<150)){                                       // very close in front
     if((LF<150) && (RF<150) && (LS<150) && (RS<150)){
       nextState = WAIT;
 		} else if ((LS>RS) && (LF>RF)){
@@ -220,15 +220,31 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 		} else {
 			nextState = WAIT; // CHANGE THIS
 		}
-	} else if((RA <100) || (LA < 100)){
+	}  else if((FR<150) || (FL<150)){                               // very close on one side of the front
+		if((FR< 150) && (FL > 225)){
+			nextState = LEFT60;
+		} else if((FL< 150) && (FR > 225)){
+			nextState = RIGHT60;
+		} else if ((LS>RS) && (LF>RF)){
+			nextState = LEFT90;
+		} else if ((LS<RS) && (LF<RF)){
+		  nextState = RIGHT90;
+		} else {
+			nextState = WAIT; // CHANGE THIS
+		} 	
+  } else if((RA <150) || (LA < 150)){                             // very close on angle sensor, but not front
 		if((RA <100) && (LA < 100)){
 			nextState = WAIT;
-	  } else if( RA < 100){
+	  } else if( RA < 70){
+			nextState = LEFT90;
+		} else if (LA < 70){
+			nextState = RIGHT90;
+		} else if (RA <150){
 			nextState = LEFT30;
-		} else if (LA < 100){
+		} else if (LA < 150){
 			nextState = RIGHT30;
 		}
-	} else if((FR<350) && (FL<350)){  								// sorta close
+	} else if((FR<350) && (FL<350)){  								              // sorta close in front
     if((LF<200) && (RF<200) && (LS<200) && (RS<200)){
       nextState = WAIT;
 		} else if ((RA>LA) && (RA > 400)){
@@ -244,13 +260,15 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 		} else {
 			nextState = RIGHT90;
 		}
-  } else if((LF < 200) || (LS < 200)){			// close to someting on left
+  } else if((LF < 200) || (LS < 200)){			                      // close to someting on left
 		nextState = RIGHT30;
-	} else if ((RF < 200) || (RS < 200) ){		// close to something on right
+	} else if ((RF < 200) || (RS < 200) ){		                      // close to something on right
 	  nextState = LEFT30;
-	} else if ((RA > LA ) &&  (RA > 500)){
+	} else if ((FR > 350) && (FL > 350) && (RA > 400) && (LA > 400)){// open road ahead
+	  nextState = STRAIGHT;
+  } else if ((RA > LA ) &&  (RA > 500)){ // consider removing 
     nextState = RIGHT45; //45R
-	} else if ((LA>RA) && (LA > 500)){
+	} else if ((LA>RA) && (LA > 500)){     // consider removing
 	  nextState = LEFT45; // 45L
 	}
 	return nextState;
@@ -371,17 +389,17 @@ typedef struct State {
 } State;
 
 State FSM[NUM_STATES] = {
-	{MAXSPEED/2, 0, 1, "Straight", StraightNS},  // State 0
-	{MAXSPEED/2, 0, 1, "Straight No Left", StraightNS},  // State 1
-	{MAXSPEED/2, 0, 1, "Straight No Right", StraightNS},  // State 2
-	{MAXSPEED/2, -90, 1, "-90", StraightNS},  // State 3
-	{MAXSPEED/2, -60, 1, "-60", StraightNS},  // State 4
-	{MAXSPEED/2, -45, 1, "-45", StraightNS},  // State 5
-	{MAXSPEED/2, -30, 1, "-30", StraightNS},  // State 6
-	{MAXSPEED/2, 30, 1, "30", StraightNS},  // State 7
-	{MAXSPEED/2, 45, 1, "45", StraightNS},  // State 8 
-	{MAXSPEED/2, 60, 1, "60", StraightNS},  // State 9
-	{MAXSPEED/2, 90, 1, "90", StraightNS},  // State 10
+	{MAXSPEED, 0, 1, "Straight", StraightNS},  // State 0
+	{MAXSPEED, 0, 1, "Straight No Left", StraightNS},  // State 1
+	{MAXSPEED, 0, 1, "Straight No Right", StraightNS},  // State 2
+	{MAXSPEED, -90, 1, "-90", StraightNS},  // State 3
+	{MAXSPEED, -60, 1, "-60", StraightNS},  // State 4
+	{MAXSPEED, -45, 1, "-45", StraightNS},  // State 5
+	{MAXSPEED, -30, 1, "-30", StraightNS},  // State 6
+	{MAXSPEED, 30, 1, "30", StraightNS},  // State 7
+	{MAXSPEED, 45, 1, "45", StraightNS},  // State 8 
+	{MAXSPEED, 60, 1, "60", StraightNS},  // State 9
+	{MAXSPEED, 90, 1, "90", StraightNS},  // State 10
 	{0       ,  0, 1, "Wait", StraightNS},   // State 11
 };
 

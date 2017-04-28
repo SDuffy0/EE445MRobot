@@ -535,8 +535,8 @@ void USONIC_Init(void){
 void USONIC_StartHCSR04(void){
 	Timer2_StartHCSR04();
 	Timer1_StartHCSR04();
-	//Timer2_StartHCSR04();
-	
+	Timer3_StartHCSR04();
+	Timer0_StartHCSR04();
 }
 
 
