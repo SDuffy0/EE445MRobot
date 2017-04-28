@@ -9,4 +9,3 @@
 .\can0.o: interrupt.h
 .\can0.o: os.h
 .\can0.o: can0.h
-.\can0.o: ../inc/tm4c123gh6pm.h

@@ -192,6 +192,144 @@ RobotState[] RobotFSM = {
 
 
 */
+#define MAX_NUM_NEXT_STATES 16
+#define NUM_STATES 12
+
+uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+	if((RF<200) && (LF<200)){  								// close to something in front
+    if((LF<200) && (RF<200) && (LS<200) && (RS<200)){
+      nextState = 11;		// wait
+		} else if ((RA>LA) && (RA > 400)){
+			nextState = 8; 
+		} else if ((LA>RA) && (LA > 400)){
+			nextState = 5;
+		} else if ((RF>LF) && (RS>LS)){
+		  nextState = 10;  // 90R	
+		} else if ((LF>RF) && (LS>RS)){
+			nextState = 3;   // 90L
+		} else if ( RS < LS){
+			nextState = 3;
+		} else { // (LS<=RS)
+			nextState = 10;
+		}
+  } else if((LF < 200) || (LS < 200)){			// close to someting on left
+		nextState = 6;
+	} else if ((RF < 200) || (RS < 200) ){		// close to something on right
+	  nextState = 5;
+	} else if ((RA > LA ) &&  (RA > 500)){
+    nextState = 8; //45R
+	} else if ((LA>RA) && (LA > 500)){
+	  nextState = 5; // 45L
+	}
+	return nextState;
+}
+
+
+uint8_t StraightNoLeftNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+	if((LF < 300) && (LS < 300)){ 
+		return 0;   
+	} else if((LF < 200) || (LS < 200)){			// close to someting on left
+		nextState = 6;
+	}
+	return nextState;
+}
+
+uint8_t StraightNoRightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;	
+	if((RF < 300) && (RS < 300)){ 
+		return 0;   
+	} else if((LF < 200) || (LS < 200)){			// close to someting on left
+		nextState = 5;
+	}	
+	return nextState;
+}
+
+uint8_t Left90NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 1;
+  return nextState;
+}
+
+uint8_t Left60NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+  return nextState;
+}
+
+uint8_t Left45NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+ 	uint16_t nextState = 0;
+  return nextState;
+}
+
+uint8_t Right45NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+  return nextState;
+}
+
+uint8_t Right60NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+  return nextState;
+}
+
+uint8_t Right90NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 2;
+  return nextState;
+}
+
+uint8_t Left30NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+  return nextState;
+}
+
+uint8_t Right30NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+  return nextState;
+}
+
+uint8_t WaitNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	uint16_t nextState = 0;
+	if((LF<200) && (RF<200) && (FR<200) && (FL<200) && (LS<200) && (RS<200) && (RA<200) && (LA<200)){
+	  nextState = 11;
+	} else if ((FR > 300) && (FL > 300)) {
+		nextState = 0;
+	} else if ((RF > 300) && (RS > 300)){
+		nextState = 10;
+	} else if ((LF > 300) && (LS > 300)){
+		nextState = 3;
+	}
+  return nextState;
+}
+
+typedef struct State {
+	int8_t speed;
+	int8_t angle;
+	uint8_t time; 									// may or may not be needed
+	char* description;							// will be used for debugging
+	uint8_t (*findNextState)(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t); // should use the sensor inputs to determine the next state
+} State;
+
+State FSM[NUM_STATES] = {
+	{MAXSPEED, 0, 1, "Straight", StraightNS},  // State 0
+	{MAXSPEED, 0, 1, "Straight No Left", StraightNoLeftNS},  // State 1
+	{MAXSPEED, 0, 1, "Straight No Right", StraightNoRightNS},  // State 2
+	{MAXSPEED, -90, 1, "-90", Left90NS},  // State 3
+	{MAXSPEED, -60, 1, "-60", Left60NS},  // State 4
+	{MAXSPEED, -45, 1, "-45", Left45NS},  // State 5
+	{MAXSPEED, -30, 1, "-30", Left30NS},  // State 6
+	{MAXSPEED, 30, 1, "30", Right30NS},  // State 7
+	{MAXSPEED, 45, 1, "45", Right45NS},  // State 8 
+	{MAXSPEED, 60, 1, "60", Right60NS},  // State 9
+	{MAXSPEED, 90, 1, "90", Right90NS},  // State 10
+	{0       ,  0, 1, "Wait", WaitNS},   // State 11
+};
+
+void RunFSM(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
+	static uint8_t currentStateNumber;
+	currentStateNumber = FSM[currentStateNumber].findNextState(LF, FR, FL, RF, LS, RS, RA, LA); // go to next state
+	Drive(FSM[currentStateNumber].speed, FSM[currentStateNumber].angle);				// update drive
+	ST7735_SetCursor(0,0);
+	ST7735_OutString(FSM[currentStateNumber].description); 											// print description for debugging
+}
 
 uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
 uint8_t IRData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];

@@ -78,8 +78,8 @@ ARM Macro Assembler    Page 2
               00000000 
 Command Line: --debug --xref --cpu=Cortex-M4 --apcs=interwork --depend=.\thread
 switch.d -o.\threadswitch.o -IC:\Keil\ARM\RV31\INC -IC:\Keil\ARM\CMSIS\Include 
--IC:\Keil\ARM\Inc\Luminary --predefine="__EVAL SETA 1" --predefine="__MICROLIB 
-SETA 1" --list=.\threadswitch.lst ThreadSwitch.s
+-IC:\Keil\ARM\Inc\Luminary --predefine="__MICROLIB SETA 1" --list=.\threadswitc
+h.lst ThreadSwitch.s
 
 
 
@@ -135,4 +135,4 @@ Symbol: RunPt
       At line 40 in file ThreadSwitch.s
 
 2 symbols
-339 symbols in table
+338 symbols in table
