@@ -10,5 +10,5 @@ void Drive_WheelDirection(int8_t dir);
 void Drive_Speed(int8_t speed);
 void Drive(int8_t speed, int8_t dir);
 void Drive_PIControlDirection(int32_t E);
-
+void Drive_Stop(void);
 #endif

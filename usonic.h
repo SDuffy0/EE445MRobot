@@ -42,8 +42,8 @@
 #define __USONIC_H  1
 
 
-#define NUM_HCSR04 2
-#define NUM_PING 1
+#define NUM_HCSR04 4
+#define NUM_PING 0
 
 #define NUM_USONIC (NUM_HCSR04 + NUM_PING)
 

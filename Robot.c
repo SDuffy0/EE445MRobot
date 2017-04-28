@@ -195,107 +195,169 @@ RobotState[] RobotFSM = {
 #define MAX_NUM_NEXT_STATES 16
 #define NUM_STATES 12
 
+#define STRAIGHT 0
+#define STRAIGHT_NL 1
+#define STRAIGHT_NR 2
+#define LEFT90 3
+#define LEFT60 4
+#define LEFT45 5
+#define LEFT30 6
+#define RIGHT30 7
+#define RIGHT45 8
+#define RIGHT60 9
+#define RIGHT90 10
+#define WAIT 11
+
 uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
-	if((RF<200) && (LF<200)){  								// close to something in front
+	uint16_t nextState = STRAIGHT;
+	if((FR<150) && (FL<150)){  // very close!!
+    if((LF<150) && (RF<150) && (LS<150) && (RS<150)){
+      nextState = WAIT;
+		} else if ((LS>RS) && (LF>RF)){
+			nextState = LEFT90;
+		} else if ((LS<RS) && (LF<RF)){
+		  nextState = RIGHT90;
+		} else {
+			nextState = WAIT; // CHANGE THIS
+		}
+	} else if((RA <100) || (LA < 100)){
+		if((RA <100) && (LA < 100)){
+			nextState = WAIT;
+	  } else if( RA < 100){
+			nextState = LEFT30;
+		} else if (LA < 100){
+			nextState = RIGHT30;
+		}
+	} else if((FR<350) && (FL<350)){  								// sorta close
     if((LF<200) && (RF<200) && (LS<200) && (RS<200)){
-      nextState = 11;		// wait
+      nextState = WAIT;
 		} else if ((RA>LA) && (RA > 400)){
-			nextState = 8; 
+			nextState = RIGHT45; 
 		} else if ((LA>RA) && (LA > 400)){
-			nextState = 5;
+			nextState = LEFT45;
 		} else if ((RF>LF) && (RS>LS)){
-		  nextState = 10;  // 90R	
+		  nextState = RIGHT90;	
 		} else if ((LF>RF) && (LS>RS)){
-			nextState = 3;   // 90L
+			nextState = LEFT90;
 		} else if ( RS < LS){
-			nextState = 3;
-		} else { // (LS<=RS)
-			nextState = 10;
+			nextState = LEFT90;
+		} else {
+			nextState = RIGHT90;
 		}
   } else if((LF < 200) || (LS < 200)){			// close to someting on left
-		nextState = 6;
+		nextState = RIGHT30;
 	} else if ((RF < 200) || (RS < 200) ){		// close to something on right
-	  nextState = 5;
+	  nextState = LEFT30;
 	} else if ((RA > LA ) &&  (RA > 500)){
-    nextState = 8; //45R
+    nextState = RIGHT45; //45R
 	} else if ((LA>RA) && (LA > 500)){
-	  nextState = 5; // 45L
+	  nextState = LEFT45; // 45L
 	}
 	return nextState;
 }
 
 
 uint8_t StraightNoLeftNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
+	uint16_t nextState = STRAIGHT;
 	if((LF < 300) && (LS < 300)){ 
-		return 0;   
+		return STRAIGHT;   
 	} else if((LF < 200) || (LS < 200)){			// close to someting on left
-		nextState = 6;
+		nextState = LEFT30;
 	}
 	return nextState;
 }
 
 uint8_t StraightNoRightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;	
+	uint16_t nextState = STRAIGHT;	
 	if((RF < 300) && (RS < 300)){ 
-		return 0;   
+		return STRAIGHT;   
 	} else if((LF < 200) || (LS < 200)){			// close to someting on left
-		nextState = 5;
+		nextState = RIGHT45;
 	}	
 	return nextState;
 }
 
 uint8_t Left90NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 1;
+	uint16_t nextState = LEFT90;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	} else if (LA > 300){
+		nextState = LEFT60;
+	}
   return nextState;
 }
 
 uint8_t Left60NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
+	uint16_t nextState = LEFT60;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	} else if ((LA > 300) && (LF > 300) && (LS > 200)){
+		nextState = LEFT60;
+	}
   return nextState;
 }
 
 uint8_t Left45NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
- 	uint16_t nextState = 0;
+ 	uint16_t nextState = LEFT45;
+	//if(
+	if((LA > FL) && (LA > FR) && (LA > RA)){
+		nextState = LEFT45;
+	} else	if((FL > 350) && (FR > 350)){
+		nextState = STRAIGHT;
+	}
   return nextState;
 }
 
 uint8_t Right45NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
+	uint16_t nextState = RIGHT45;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	}
   return nextState;
 }
 
 uint8_t Right60NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
+	uint16_t nextState = RIGHT60;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	}
   return nextState;
 }
 
 uint8_t Right90NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 2;
-  return nextState;
+	uint16_t nextState = RIGHT90;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	}  
+	return nextState;
 }
 
 uint8_t Left30NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
-  return nextState;
+	uint16_t nextState = LEFT30;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	}  
+	return nextState;
 }
 
 uint8_t Right30NS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
+	uint16_t nextState = RIGHT30;
+	if(FL > 350 && FR > 350){
+		nextState = STRAIGHT;
+	}
   return nextState;
 }
 
 uint8_t WaitNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	uint16_t nextState = 0;
+	uint16_t nextState = STRAIGHT;
 	if((LF<200) && (RF<200) && (FR<200) && (FL<200) && (LS<200) && (RS<200) && (RA<200) && (LA<200)){
-	  nextState = 11;
+	  nextState = WAIT;
 	} else if ((FR > 300) && (FL > 300)) {
-		nextState = 0;
+		nextState = STRAIGHT;
 	} else if ((RF > 300) && (RS > 300)){
-		nextState = 10;
+		nextState = RIGHT90;
 	} else if ((LF > 300) && (LS > 300)){
-		nextState = 3;
+		nextState = LEFT90;
 	}
   return nextState;
 }
@@ -309,26 +371,24 @@ typedef struct State {
 } State;
 
 State FSM[NUM_STATES] = {
-	{MAXSPEED, 0, 1, "Straight", StraightNS},  // State 0
-	{MAXSPEED, 0, 1, "Straight No Left", StraightNoLeftNS},  // State 1
-	{MAXSPEED, 0, 1, "Straight No Right", StraightNoRightNS},  // State 2
-	{MAXSPEED, -90, 1, "-90", Left90NS},  // State 3
-	{MAXSPEED, -60, 1, "-60", Left60NS},  // State 4
-	{MAXSPEED, -45, 1, "-45", Left45NS},  // State 5
-	{MAXSPEED, -30, 1, "-30", Left30NS},  // State 6
-	{MAXSPEED, 30, 1, "30", Right30NS},  // State 7
-	{MAXSPEED, 45, 1, "45", Right45NS},  // State 8 
-	{MAXSPEED, 60, 1, "60", Right60NS},  // State 9
-	{MAXSPEED, 90, 1, "90", Right90NS},  // State 10
-	{0       ,  0, 1, "Wait", WaitNS},   // State 11
+	{MAXSPEED/2, 0, 1, "Straight", StraightNS},  // State 0
+	{MAXSPEED/2, 0, 1, "Straight No Left", StraightNS},  // State 1
+	{MAXSPEED/2, 0, 1, "Straight No Right", StraightNS},  // State 2
+	{MAXSPEED/2, -90, 1, "-90", StraightNS},  // State 3
+	{MAXSPEED/2, -60, 1, "-60", StraightNS},  // State 4
+	{MAXSPEED/2, -45, 1, "-45", StraightNS},  // State 5
+	{MAXSPEED/2, -30, 1, "-30", StraightNS},  // State 6
+	{MAXSPEED/2, 30, 1, "30", StraightNS},  // State 7
+	{MAXSPEED/2, 45, 1, "45", StraightNS},  // State 8 
+	{MAXSPEED/2, 60, 1, "60", StraightNS},  // State 9
+	{MAXSPEED/2, 90, 1, "90", StraightNS},  // State 10
+	{0       ,  0, 1, "Wait", StraightNS},   // State 11
 };
 
 void RunFSM(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
 	static uint8_t currentStateNumber;
 	currentStateNumber = FSM[currentStateNumber].findNextState(LF, FR, FL, RF, LS, RS, RA, LA); // go to next state
 	Drive(FSM[currentStateNumber].speed, FSM[currentStateNumber].angle);				// update drive
-	ST7735_SetCursor(0,0);
-	ST7735_OutString(FSM[currentStateNumber].description); 											// print description for debugging
 }
 
 uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
@@ -337,9 +397,9 @@ void MotorController(void){
 	Drive_Init();
 	while(1){
 			CAN0_GetMail(SensorData);
-			uint16_t IRF, IFR, IFL, ILF, URM, URF, ULF;
-			int32_t angle, speed;
-			uint16_t rightMin, leftMin, frontMin;
+			uint16_t IRF, IFR, IFL, ILF, URM, URF, ULF, ULM;
+//			int32_t angle, speed;
+//			uint16_t rightMin, leftMin, frontMin;
 			IFR = ((SensorData[0][1]&0x00FF)<<8) + SensorData[0][0];
 			IRF = ((SensorData[0][3]&0x00FF)<<8) + SensorData[0][2];
 			ILF = ((SensorData[0][5]&0x00FF)<<8) + SensorData[0][4];
@@ -347,6 +407,7 @@ void MotorController(void){
 			URM = ((SensorData[1][1]&0x00FF)<<8) + SensorData[1][0];
 			URF = ((SensorData[1][3]&0x00FF)<<8) + SensorData[1][2];
 			ULF = ((SensorData[1][5]&0x00FF)<<8) + SensorData[1][4];
+		  ULM = ((SensorData[1][7]&0x00FF)<<8) + SensorData[1][6];
 			/*speed = MAXSPEED/2;
 			if( RF < 150){
 				angle = -45;
@@ -398,7 +459,8 @@ void MotorController(void){
         angle *= -1;
       }
 			Drive(speed, angle);*/
-			if(IFR < 100){
+			RunFSM(ILF, IFR, IFL, IRF, ULM, URM, URF, ULF);
+			/*if(IFR < 100){
 				Drive(MAXSPEED/2, -45);
 			}
 			else if(IFL < 100){
@@ -411,7 +473,7 @@ void MotorController(void){
 			int32_t a = URF;
 			angle = 90 - arctan(b + a*C2, a*C1);
 			Drive_PIControlDirection(angle);
-			}
+			}*/
 		
 	}
 }
@@ -436,7 +498,7 @@ void IdleTask(void){
 }
 
 
-// NOTE: Define MOTOR_BOARD, SENSOR_BOARD_1, or SENSOR_BOARD_2 in the build options 
+// NOTE: Define MOTOR_BOARD
 int main(void){        // lab 4 real main
 	OS_Init();           // initialize, disable interrupts
   PortD_Init();  // user debugging profile
