@@ -1,0 +1,22 @@
+--cpu Cortex-M4
+".\startup.o"
+".\pll.o"
+".\os.o"
+".\adc.o"
+".\robot.o"
+".\can.o"
+".\can0.o"
+".\interrupt.o"
+".\pwm.o"
+".\usonic.o"
+".\wtimer0a.o"
+".\wtimer0b.o"
+".\wtimer5a.o"
+".\st7735.o"
+".\systick.o"
+".\threadswitch.o"
+".\drive.o"
+".\arctan.o"
+--library_type=microlib --ro-base 0x00000000 --entry 0x00000000 --rw-base 0x20000000 --entry Reset_Handler --first __Vectors --strict --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Robot.map" -o .\Robot.axf

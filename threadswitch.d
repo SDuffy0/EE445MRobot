@@ -1,0 +1,1 @@
+.\threadswitch.o: ThreadSwitch.s
