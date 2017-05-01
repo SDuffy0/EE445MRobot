@@ -233,9 +233,9 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 		if((RA <100) && (LA < 100)){
 			nextState = WAIT;
 	  } else if( RA < 70){
-			nextState = LEFT90;
+			nextState = LEFT60;
 		} else if (LA < 70){
-			nextState = RIGHT90;
+			nextState = RIGHT60;
 		} else if (RA <200){
 			nextState = LEFT30;
 		} else if (LA < 200){
@@ -248,9 +248,9 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 			nextState = RIGHT45; 
 		} else if ((LA>RA) && (LA > 400)){
 			nextState = LEFT45;
-		} else if ((RF>LF) && (RS>LS)){
+		} else if ((RF>LF) && (RS>LS)&& (RA > 400)){
 		  nextState = RIGHT90;	
-		} else if ((LF>RF) && (LS>RS)){
+		} else if ((LF>RF) && (LS>RS)&& (LA > 400)){
 			nextState = LEFT90;
 		} else if ( RS < LS){
 			nextState = LEFT90;
