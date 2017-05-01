@@ -399,9 +399,45 @@ State FSM[NUM_STATES] = {
 	{0       ,  0, 1, "Wait", StraightNS},   // State 11
 };
 
+typedef struct RefState {
+	uint8_t (*stateRef)(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t);
+} RefState;
+
+// not sure if semicolons necessary here, but might as well
+RefState RefFSM[NUM_STATES] =
+{
+	{StraightNS},
+	{StraightNoLeftNS},
+	{StraightNoRightNS},
+	{Left90NS},
+	{Left60NS},
+	{Left45NS},
+	{Left30NS},
+	{Right30NS},
+	{Right45NS},
+	{Right60NS},
+	{Right90NS},
+	{WaitNS}
+};
+
+//#define STRAIGHT 0
+//#define STRAIGHT_NL 1
+//#define STRAIGHT_NR 2
+//#define LEFT90 3
+//#define LEFT60 4
+//#define LEFT45 5
+//#define LEFT30 6
+//#define RIGHT30 7
+//#define RIGHT45 8
+//#define RIGHT60 9
+//#define RIGHT90 10
+//#define WAIT 11
+
+
 void RunFSM(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
 	static uint8_t currentStateNumber;
 	currentStateNumber = FSM[currentStateNumber].findNextState(LF, FR, FL, RF, LS, RS, RA, LA); // go to next state
+	//FSM[currentStateNumber].findNextState = RefFSM[currentStateNumber].stateRef; // if we want to use other states
 	Drive(FSM[currentStateNumber].speed, FSM[currentStateNumber].angle);				// update drive
 }
 
