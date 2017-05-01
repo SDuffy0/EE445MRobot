@@ -210,38 +210,34 @@ RobotState[] RobotFSM = {
 
 uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
 	uint16_t nextState = STRAIGHT;
-	if((FR<150) && (FL<150)){                                       // very close in front
-    if((LF<150) && (RF<150) && (LS<150) && (RS<150)){
+	if((FR<200) && (FL<200)){                                       // very close in front
+    if((LF<200) && (RF<200) && (LS<200) && (RS<200)){
       nextState = WAIT;
-		} else if ((LS>RS) && (LF>RF)){
+		} else if (((LS +LF)/2) > ((RS+RF)/2)){
 			nextState = LEFT90;
-		} else if ((LS<RS) && (LF<RF)){
-		  nextState = RIGHT90;
 		} else {
-			nextState = WAIT; // CHANGE THIS
+		  nextState = RIGHT90;
 		}
-	}  else if((FR<150) || (FL<150)){                               // very close on one side of the front
-		if((FR< 150) && (FL > 225)){
+	}  else if((FR<200) || (FL<200)){                               // very close on one side of the front
+		if((FR< 200) && (FL > 275)){
 			nextState = LEFT60;
-		} else if((FL< 150) && (FR > 225)){
+		} else if((FL< 200) && (FR > 275)){
 			nextState = RIGHT60;
-		} else if ((LS>RS) && (LF>RF)){
+		} else if (((LS +LF)/2) > ((RS+RF)/2)){
 			nextState = LEFT90;
-		} else if ((LS<RS) && (LF<RF)){
-		  nextState = RIGHT90;
 		} else {
-			nextState = WAIT; // CHANGE THIS
-		} 	
-  } else if((RA <150) || (LA < 150)){                             // very close on angle sensor, but not front
+		  nextState = RIGHT90;
+		}
+  } else if((RA <200) || (LA < 200)){                             // very close on angle sensor, but not front
 		if((RA <100) && (LA < 100)){
 			nextState = WAIT;
 	  } else if( RA < 70){
 			nextState = LEFT90;
 		} else if (LA < 70){
 			nextState = RIGHT90;
-		} else if (RA <150){
+		} else if (RA <200){
 			nextState = LEFT30;
-		} else if (LA < 150){
+		} else if (LA < 200){
 			nextState = RIGHT30;
 		}
 	} else if((FR<350) && (FL<350)){  								              // sorta close in front
