@@ -213,17 +213,17 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 	if((FR<200) && (FL<200)){                                       // very close in front
     if((LF<200) && (RF<200) && (LS<200) && (RS<200)){
       nextState = WAIT;
-		} else if (((LS +LF)/2) > ((RS+RF)/2)){
+		} else if (((LA + LS +LF)/3) > ((RA + RS+RF)/3)){
 			nextState = LEFT90;
 		} else {
 		  nextState = RIGHT90;
 		}
 	}  else if((FR<200) || (FL<200)){                               // very close on one side of the front
-		if((FR< 200) && (FL > 275)){
+		if((FR< 200) && (FL > 275) && (LA > 350) && (LF > 350)){
 			nextState = LEFT60;
-		} else if((FL< 200) && (FR > 275)){
+		} else if((FL< 200) && (FR > 275) && (RA > 250) && (RF >350)){
 			nextState = RIGHT60;
-		} else if (((LS +LF)/2) > ((RS+RF)/2)){
+		} else if (((LA + LS +LF)/3) > ((RA + RS+RF)/3)){
 			nextState = LEFT90;
 		} else {
 		  nextState = RIGHT90;
@@ -263,9 +263,9 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 	} else if ((FR > 350) && (FL > 350) && (RA > 400) && (LA > 400)){// open road ahead
 	  nextState = STRAIGHT;
   } else if ((RA > LA ) &&  (RA > 500)){ // consider removing 
-    nextState = RIGHT45; //45R
+    nextState = STRAIGHT;//RIGHT45; //45R
 	} else if ((LA>RA) && (LA > 500)){     // consider removing
-	  nextState = LEFT45; // 45L
+	  nextState = STRAIGHT;//LEFT45; // 45L
 	}
 	return nextState;
 }
@@ -385,17 +385,17 @@ typedef struct State {
 } State;
 
 State FSM[NUM_STATES] = {
-	{MAXSPEED, 0, 1, "Straight", StraightNS},  // State 0
-	{MAXSPEED, 0, 1, "Straight No Left", StraightNS},  // State 1
-	{MAXSPEED, 0, 1, "Straight No Right", StraightNS},  // State 2
-	{MAXSPEED, -90, 1, "-90", StraightNS},  // State 3
-	{MAXSPEED, -60, 1, "-60", StraightNS},  // State 4
-	{MAXSPEED, -45, 1, "-45", StraightNS},  // State 5
-	{MAXSPEED, -30, 1, "-30", StraightNS},  // State 6
-	{MAXSPEED, 30, 1, "30", StraightNS},  // State 7
-	{MAXSPEED, 45, 1, "45", StraightNS},  // State 8 
-	{MAXSPEED, 60, 1, "60", StraightNS},  // State 9
-	{MAXSPEED, 90, 1, "90", StraightNS},  // State 10
+	{MAXSPEED*2/3, 0, 1, "Straight", StraightNS},  // State 0
+	{MAXSPEED*2/3, 0, 1, "Straight No Left", StraightNS},  // State 1
+	{MAXSPEED*2/3, 0, 1, "Straight No Right", StraightNS},  // State 2
+	{MAXSPEED*2/3, -90, 1, "-90", StraightNS},  // State 3
+	{MAXSPEED*2/3, -60, 1, "-60", StraightNS},  // State 4
+	{MAXSPEED*2/3, -45, 1, "-45", StraightNS},  // State 5
+	{MAXSPEED*2/3, -30, 1, "-30", StraightNS},  // State 6
+	{MAXSPEED*2/3, 30, 1, "30", StraightNS},  // State 7
+	{MAXSPEED*2/3, 45, 1, "45", StraightNS},  // State 8 
+	{MAXSPEED*2/3, 60, 1, "60", StraightNS},  // State 9
+	{MAXSPEED*2/3, 90, 1, "90", StraightNS},  // State 10
 	{0       ,  0, 1, "Wait", StraightNS},   // State 11
 };
 
