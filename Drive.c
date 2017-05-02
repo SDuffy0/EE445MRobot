@@ -7,7 +7,7 @@
 #include "Drive.h"
 
 #define POWERMIN 400
-#define POWERMAX 12400
+#define POWERMAX 12100
 #define SERVOMID 1875
 
 uint16_t power, direction;
@@ -16,8 +16,8 @@ uint8_t stopped = 0;
 void Drive_Init(void){
 	direction = 0; //going straight
 	power = POWERMIN;
-	Left_Init(12500, power, direction);          // initialize PWM0, 100 Hz
-  Right_InitB(12500, power, direction);   // initialize PWM0, 100 Hz
+	Left_InitB(12500, power, direction);          // initialize PWM0, 100 Hz
+  Right_Init(12500, power, direction);   // initialize PWM0, 100 Hz
   Servo_Init(25000, SERVOMID);
 }
 
@@ -43,10 +43,10 @@ void Drive_WheelDirection(int8_t dir){
 void Drive_DifferentialTurn(int8_t dir){	
 	Drive_WheelDirection(dir);
 	if(dir < 0){
-		Left_Duty(power/4, direction);
+		Left_DutyB(power/2, direction);
 	}
 	else{
-		Right_DutyB(power/4,direction);
+		Right_Duty(power/2,direction);
 	}
 	
 }
@@ -54,10 +54,10 @@ void Drive_DifferentialTurn(int8_t dir){
 void Drive_SteepDifferentialTurn(int8_t dir){
 	Drive_WheelDirection(dir);
 	if(dir < 0){
-		Left_Duty(power/2, 1 - direction);
+		Left_DutyB(power/2, 1 - direction);
 	}
 	else{
-		Right_DutyB(power/1, 1 - direction);
+		Right_Duty(power/2, 1 - direction);
 	}
 }
 
@@ -84,8 +84,8 @@ void Drive_Speed(int8_t speed){
 		newDuty = POWERMAX;
 	}
 	power = newDuty;
-	Left_Duty(newDuty, direction);
-	Right_DutyB(newDuty, direction);
+	Left_DutyB(newDuty, direction);
+	Right_Duty(newDuty, direction);
 	
 }
 
@@ -127,8 +127,8 @@ void Drive_PIControlDirection(int32_t Error){
 	/*Left_Duty(UL, dirL);
 	Right_DutyB(UR, dirR);*/
 	if(!stopped){
-	Left_Duty(UL, 0);
-	Right_DutyB(UR, 0);
+	Left_DutyB(UL, 0);
+	Right_Duty(UR, 0);
 	}
 }
 
@@ -145,8 +145,8 @@ void Drive(int8_t speed, int8_t dir){
 }
 
 void Drive_Stop(void){
-	Left_Duty(POWERMIN, 0);
-	Right_DutyB(POWERMIN, 0);
+	Left_DutyB(POWERMIN, 0);
+	Right_Duty(POWERMIN, 0);
 	stopped = 1;
 }
 

@@ -1,5 +1,5 @@
 .\can0.o: can0.c
-.\can0.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\can0.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\can0.o: hw_can.h
 .\can0.o: hw_ints.h
 .\can0.o: hw_memmap.h
