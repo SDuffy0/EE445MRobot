@@ -1,7 +1,7 @@
 .\robot.o: Robot.c
-.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\string.h
-.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\stdio.h
-.\robot.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
+.\robot.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\robot.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\robot.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\robot.o: OS.h
 .\robot.o: tm4c123gh6pm.h
 .\robot.o: ADC.h

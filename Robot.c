@@ -85,7 +85,7 @@
 #include "Drive.h"
 #include "arctan.h"
 
-#define SENSORFREQ 50		//50 Hz data collection
+#define SENSORFREQ 100		//50 Hz data collection
 
 #define PF0  (*((volatile unsigned long *)0x40025004))
 #define PF1  (*((volatile unsigned long *)0x40025008))
@@ -440,8 +440,13 @@ void RunFSM(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uin
 	static uint8_t currentStateNumber;
 	currentStateNumber = FSM[currentStateNumber].findNextState(LF, FR, FL, RF, LS, RS, RA, LA); // go to next state
 	// FSM[currentStateNumber].findNextState = RefFSM[currentStateNumber].stateRef; // if we want to use other states
+<<<<<<< HEAD
 	Drive(FSM[currentStateNumber].findSpeed(LF, FR, FL, RF, LS, RS, RA, LA), 
 	     FSM[currentStateNumber].angle);				// update drive
+=======
+	if(currentStateNumber != STRAIGHT) Drive(FSM[currentStateNumber].speed, FSM[currentStateNumber].angle);				// update drive
+	else Drive_PIControlDirection(min(LF, LS) - min(RF, RS));
+>>>>>>> d1a0147c28dca99503fd9a73b39fef12c186585d
 }
 
 uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
@@ -451,7 +456,7 @@ void MotorController(void){
 	while(1){
 			CAN0_GetMail(SensorData);
 			uint16_t IRF, IFR, IFL, ILF, URM, URF, ULF, ULM;
-//			int32_t angle, speed;
+			int32_t angle, speed;
 //			uint16_t rightMin, leftMin, frontMin;
 			IFR = ((SensorData[0][1]&0x00FF)<<8) + SensorData[0][0];
 			IRF = ((SensorData[0][3]&0x00FF)<<8) + SensorData[0][2];
