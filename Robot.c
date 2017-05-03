@@ -268,7 +268,7 @@ uint8_t StraightNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t 
 	} else if ((LA>RA) && (LA > 500)){     // consider removing
 	  nextState = STRAIGHT;//LEFT45; // 45L
 	}
-	return RIGHT90;//STRAIGHT;//nextState;
+	return nextState;
 }
 
 
@@ -377,23 +377,8 @@ uint8_t WaitNS(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, 
   return nextState;
 }
 
-int8_t StraightSpeed(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uint16_t RS, uint16_t RA, uint16_t LA){
-	int8_t speed = MAXSPEED;
-	/*if(FR < 400 || FL <400 || LA<400 || RA<400){
-		speed = MAXSPEED/2;
-	}
-	if(FR < 200 || FL <200 || LA<200 || RA<200){
-		speed = MAXSPEED/4;
-	}
-	if(FR < 100 || FL <100 || LA<100 || RA<100){
-		speed = 0;
-	}*/
-	return speed;
-} 
-
 typedef struct State {
-	// int8_t speed;
-	int8_t (*findSpeed)(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t); 
+	int8_t speed;
 	int8_t angle;
 	uint8_t time; 									// may or may not be needed
 	char* description;							// will be used for debugging
@@ -401,18 +386,18 @@ typedef struct State {
 } State;
 
 State FSM[NUM_STATES] = {
-	{StraightSpeed/*MAXSPEED*2/3*/, 0, 1, "Straight", StraightNS},  // State 0
-	{StraightSpeed/*MAXSPEED*2/3*/, 0, 1, "Straight No Left", StraightNS},  // State 1
-	{StraightSpeed, 0, 1, "Straight No Right", StraightNS},  // State 2
-	{StraightSpeed, -90, 1, "-90", StraightNS},  // State 3
-	{StraightSpeed, -60, 1, "-60", StraightNS},  // State 4
-	{StraightSpeed, -45, 1, "-45", StraightNS},  // State 5
-	{StraightSpeed, -30, 1, "-30", StraightNS},  // State 6
-	{StraightSpeed, 30, 1, "30", StraightNS},  // State 7
-	{StraightSpeed, 45, 1, "45", StraightNS},  // State 8 
-	{StraightSpeed, 60, 1, "60", StraightNS},  // State 9
-	{StraightSpeed, 90, 1, "90", StraightNS},  // State 10
-	{StraightSpeed       ,  0, 1, "Wait", StraightNS},   // State 11
+	{MAXSPEED*2/3, 0, 1, "Straight", StraightNS},  // State 0
+	{MAXSPEED*2/3, 0, 1, "Straight No Left", StraightNS},  // State 1
+	{MAXSPEED*2/3, 0, 1, "Straight No Right", StraightNS},  // State 2
+	{MAXSPEED*2/3, -90, 1, "-90", StraightNS},  // State 3
+	{MAXSPEED*2/3, -60, 1, "-60", StraightNS},  // State 4
+	{MAXSPEED*2/3, -45, 1, "-45", StraightNS},  // State 5
+	{MAXSPEED*2/3, -30, 1, "-30", StraightNS},  // State 6
+	{MAXSPEED*2/3, 30, 1, "30", StraightNS},  // State 7
+	{MAXSPEED*2/3, 45, 1, "45", StraightNS},  // State 8 
+	{MAXSPEED*2/3, 60, 1, "60", StraightNS},  // State 9
+	{MAXSPEED*2/3, 90, 1, "90", StraightNS},  // State 10
+	{0       ,  0, 1, "Wait", StraightNS},   // State 11
 };
 
 typedef struct RefState {
@@ -440,13 +425,8 @@ void RunFSM(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uin
 	static uint8_t currentStateNumber;
 	currentStateNumber = FSM[currentStateNumber].findNextState(LF, FR, FL, RF, LS, RS, RA, LA); // go to next state
 	// FSM[currentStateNumber].findNextState = RefFSM[currentStateNumber].stateRef; // if we want to use other states
-<<<<<<< HEAD
-	Drive(FSM[currentStateNumber].findSpeed(LF, FR, FL, RF, LS, RS, RA, LA), 
-	     FSM[currentStateNumber].angle);				// update drive
-=======
 	if(currentStateNumber != STRAIGHT) Drive(FSM[currentStateNumber].speed, FSM[currentStateNumber].angle);				// update drive
 	else Drive_PIControlDirection(min(LF, LS) - min(RF, RS));
->>>>>>> d1a0147c28dca99503fd9a73b39fef12c186585d
 }
 
 uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
