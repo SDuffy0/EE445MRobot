@@ -193,6 +193,9 @@ RobotState[] RobotFSM = {
 
 */
 
+#define LEFT90LOOPS 10
+#define SPEED_TEST_LOOPS 20
+
 #define MAX_NUM_NEXT_STATES 16
 #define NUM_STATES 12
 
@@ -404,7 +407,7 @@ typedef struct RefState {
 	uint8_t (*stateRef)(uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t, uint16_t);
 } RefState;
 
-// not sure if semicolons necessary here, but might as well
+// not sure if brackets necessary here, but might as well
 RefState RefFSM[NUM_STATES] =
 {
 	{StraightNS},
@@ -432,6 +435,8 @@ void RunFSM(uint16_t LF, uint16_t FR, uint16_t FL, uint16_t RF, uint16_t LS, uin
 uint8_t SensorData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
 uint8_t IRData[NUMMSGS*NUM_SENSORBOARDS][MSGLENGTH];
 void MotorController(void){
+	uint8_t debug = 0, max_speed_test = 0, turn_test = 1; // change to 0 to run FSM
+	uint16_t counter = 0;
 	Drive_Init();
 	while(1){
 			CAN0_GetMail(SensorData);
@@ -497,7 +502,29 @@ void MotorController(void){
         angle *= -1;
       }
 			Drive(speed, angle);*/
-			RunFSM(ILF, IFR, IFL, IRF, ULM, URM, URF, ULF);
+			if(debug){
+				// test turn
+				if(turn_test){
+					// turn 90 degrees left
+					if(counter >= SPEED_TEST_LOOPS){
+						Drive_Stop();
+					}else{
+						Drive( FSM[LEFT90].speed, FSM[LEFT90].angle); // set up some measuring sticks?
+						counter++;
+					}
+					// turn 90 degrees right
+				}else if(max_speed_test){
+					  if(counter >= SPEED_TEST_LOOPS){
+							Drive_Stop();
+						}else{
+							Drive(MAXSPEED, 0); // set up some measuring sticks?
+						  counter++;
+						}
+				}
+				// test max speed
+			}else{
+				RunFSM(ILF, IFR, IFL, IRF, ULM, URM, URF, ULF);
+			}
 			/*if(IFR < 100){
 				Drive(MAXSPEED/2, -45);
 			}
